@@ -38,7 +38,7 @@ void setup() {
 void loop()
 {
 
-    unsigned long now_ms = millis();
+    unsigned long start_ms = millis();
 
     // update the desired temperature
     int16_t _desired_temp = _profile.get_desired_temp();
@@ -49,7 +49,10 @@ void loop()
 
     _logger.write(_desired_temp);
 
-    _last_ms = now_ms;
+    _last_ms = start_ms;
 
-    delay(1000);
+    // Keep running at constant speed
+    uint16_t wait_ms = min(max(DT - (millis() - start_ms), 1), DT);
+    delay(wait_ms);
+
 }
