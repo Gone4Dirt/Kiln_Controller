@@ -26,8 +26,7 @@ void setup() {
     _logger.init();
 
     // init temperature measurement
-    mea_temp.init();
-    //_measured_temp = 0.0;
+    mea_temp.init(&_logger);
 
     // init last time
     _last_ms = millis();
@@ -42,12 +41,16 @@ void loop()
 
     // update the desired temperature
     int16_t _desired_temp = _profile.get_desired_temp();
-    // Serial.println(_desired_temp);
+    _logger.log_therm_profile(start_ms, _desired_temp);
 
     // update the measured temp
-    mea_temp.update();
+    if (!mea_temp.update()) {
+      // TODO: add led/screen to tell user of the error
+      // TODO: shut down kiln, we have a faulty temperature measurement
+        Serial.println(F("ERROR caught"));
+    }
 
-    _logger.write(_desired_temp);
+    _logger.write();
 
     _last_ms = start_ms;
 
