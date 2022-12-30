@@ -28,7 +28,15 @@ void Logger::init(void)
         if (!SD.exists(fileName)) {
             _sd_file = SD.open(fileName, FILE_WRITE);
         if (_sd_file) {
-            _sd_file.println(F("Time(ms),DTemp(degC),TTemp(degC),MTemp(degC)"));
+            /* DEFINITIONS
+              LTime(ms) = Log time, time that the log was written,
+              PTime(ms) = Thermal profile time, last time profile was updated,
+              PT(degC)  = Profile temperatire, the last updated profile temperature (desired temp),
+              MTime(ms) = Measurement time, the last time that the measurement was updated,
+              BT(degC)  = Board temperature, the last updated board temperature (cold junction),
+              TT(degC)  = Thermocouple temperature, the last updated thermocouple temperature,
+            */
+            _sd_file.println(F("LTime(ms),PTime(ms),PT(degC),MTime(ms),BT(degC),TT(degC)"));
             _sd_file.flush();
             file_created = true;
         }
@@ -42,30 +50,46 @@ void Logger::init(void)
   }
 }
 
-void Logger::write(uint16_t data)
+/// @brief Write latest values to SD card log
+/// @param None
+void Logger::write(void)
 {
     unsigned long now_ms = millis();
-
-  if (now_ms - _last_update_ms > LOGGING_DT) {
 
     // SD card Logging
     // Create a string buffer for float to string conversion before writting to sd card
     char buffer[39]; // Largest char array is time ms
 
-    // time
+    // LTime(ms)
     memset(buffer, '\0', sizeof(buffer)); // Clear buffer
     sprintf(buffer, "%lu,", now_ms);
     _sd_file.print(buffer);
 
-    // desired temperature
+    // PTime(ms)
     memset(buffer, '\0', sizeof(buffer)); // Clear buffer
-    sprintf(buffer, "%i,", data);
+    sprintf(buffer, "%lu,", _therm_prof_time_ms);
     _sd_file.print(buffer);
 
-    // flow rate
-    // memset(buffer, '\0', sizeof(buffer)); // Clear buffer
-    // dtostrf(float(data), 20, 3, buffer);
-    // _sd_file.print(buffer);
+    // PT(degC)
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%i,", _desired_temp);
+    _sd_file.print(buffer);
+
+    // MTime(ms)
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%lu,", _measure_time_ms);
+    _sd_file.print(buffer);
+
+    // BT(degC)
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    dtostrf(_board_temp, 8, 3, buffer);
+    _sd_file.print(buffer);
+    _sd_file.print(",");
+
+    // TT(degC)
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    dtostrf(_thermocouple_temp, 8, 3, buffer);
+    _sd_file.print(buffer);
 
     // End of line
     _sd_file.print(F("\n"));
@@ -73,7 +97,6 @@ void Logger::write(uint16_t data)
     _sd_file.flush();
 
     _last_update_ms = now_ms;
-  }
 
 }
 
@@ -104,4 +127,20 @@ void Logger::raise_logger_error(Status err)
         _last_update_ms = now;
     }
   }
+}
+
+
+void Logger::log_measurement(unsigned long time_ms, float bt, float tt, uint8_t flt)
+{
+    _measure_time_ms = time_ms;
+    _board_temp = bt;
+    _thermocouple_temp = tt;
+    _fault = flt;
+}
+
+
+void Logger::log_therm_profile(unsigned long time_ms, int16_t dest)
+{
+    _therm_prof_time_ms = time_ms;
+    _desired_temp = dest;
 }

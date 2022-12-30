@@ -8,10 +8,14 @@
 class Logger
 {
     public:
-        // void Logger(void);
+
         void init(void);
 
-        void write(uint16_t data);
+        void write(void);
+
+        void log_therm_profile(unsigned long time_ms, int16_t dest);
+
+        void log_measurement(unsigned long time_ms, float bt, float tt, uint8_t flt);
 
     private:
         // Track the status of the sd card state
@@ -26,7 +30,21 @@ class Logger
 
         unsigned long _last_update_ms;
 
+        // Thermal profile
+        unsigned long _therm_prof_time_ms;
+        int16_t _desired_temp;
+
+        // Measurement
+        unsigned long _measure_time_ms;
+        float _board_temp;
+        float _thermocouple_temp;
+        uint8_t _fault;
+
         // Functions
         void raise_logger_error(Status err);
+
+        // Do not allow copies of Logger by keeping the operators private
+        //Logger(const Logger&);
+        Logger& operator=(const Logger&);
 };
 #endif
