@@ -3,6 +3,18 @@ import csv
 import matplotlib.pyplot as plt
 
 MILLIS_2_MIN = 1/60000
+MIN_2_SEC = 60
+
+#--------------------------------------------------------------
+# Calculate the delta time, input min, return sec
+def calc_dt(time_min):
+    dt = []
+    for i in range(len(time_min)-1):
+        dt.append((time_min[i+1] - time_min[i])*MIN_2_SEC)
+    return dt
+#--------------------------------------------------------------
+
+
 
 filename = fd.askopenfilename()
 
@@ -59,13 +71,22 @@ ax1.legend(loc='upper right')
 
 
 
-ax.plot(time_min, desired_temp, label="Des temp", linestyle='-', marker='', linewidth=1.5, color=[0,0,1])
+# Calculate and plot the delta time on the various parts of the controller
+logging_dt_s = calc_dt(log_time_min)
+profile_dt_s = calc_dt(therm_profile_time_min)
+measurement_dt_s = calc_dt(measured_time_min)
 
-ax.set_xlabel('Time Elapsed (min)')
-ax.set_ylabel('Temp (deg C)')
 
-ax.legend(loc='upper right')
+fig, ax2 = plt.subplots(figsize=(10, 5))
 
+ax2.plot(log_time_min[1:], logging_dt_s, label="Logging", linestyle='-', marker='', linewidth=1.5, color=[0,0,1])
+ax2.plot(therm_profile_time_min[1:], profile_dt_s, label="Therm Prof", linestyle='-', marker='', linewidth=1.5, color=[1,0,0])
+ax2.plot(measured_time_min[1:], measurement_dt_s, label="Measurment", linestyle='-', marker='', linewidth=1.5, color=[0,1,0])
+
+ax2.set_xlabel('Time Elapsed (min)')
+ax2.set_ylabel('delta time (s)')
+
+ax2.legend(loc='upper right')
 
 
 
