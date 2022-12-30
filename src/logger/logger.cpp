@@ -28,7 +28,7 @@ void Logger::init(void)
         if (!SD.exists(fileName)) {
             _sd_file = SD.open(fileName, FILE_WRITE);
         if (_sd_file) {
-            _sd_file.println(F("Time(ms),MTemp(degC),TTemp(degC)"));
+            _sd_file.println(F("Time(ms),DTemp(degC),TTemp(degC),MTemp(degC)"));
             _sd_file.flush();
             file_created = true;
         }
@@ -42,7 +42,7 @@ void Logger::init(void)
   }
 }
 
-void Logger::write(uint8_t data)
+void Logger::write(uint16_t data)
 {
     unsigned long now_ms = millis();
 
@@ -57,15 +57,15 @@ void Logger::write(uint8_t data)
     sprintf(buffer, "%lu,", now_ms);
     _sd_file.print(buffer);
 
-    // count
-    // memset(buffer, '\0', sizeof(buffer)); // Clear buffer
-    // sprintf(buffer, "%i,", counter);
-    // _sd_file.print(buffer);
+    // desired temperature
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%i,", data);
+    _sd_file.print(buffer);
 
     // flow rate
-    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
-    dtostrf(float(data), 20, 3, buffer);
-    _sd_file.print(buffer);
+    // memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    // dtostrf(float(data), 20, 3, buffer);
+    // _sd_file.print(buffer);
 
     // End of line
     _sd_file.print(F("\n"));

@@ -11,7 +11,7 @@ class Logger
         // void Logger(void);
         void init(void);
 
-        void write(uint8_t data);
+        void write(uint16_t data);
 
     private:
         // Track the status of the sd card state
