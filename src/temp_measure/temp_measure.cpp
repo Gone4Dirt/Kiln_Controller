@@ -6,12 +6,14 @@
 TempMeasure::TempMeasure(void){}
 
 
-void TempMeasure::init(void)
+void TempMeasure::init(Logger *ptr)
 {
-
     if (DEBUG) {
         Serial.println(F("Thermocouple constructor"));
     }
+
+    // Store the pointer to the logger object
+    _logger = ptr;
 
     // Init thermocouple
     _thermocouple.begin();
@@ -43,11 +45,14 @@ void TempMeasure::init(void)
     last_update_ms = millis();
 }
 
+/// @brief Updates the temperature measurements that can be later accessed. Also updates logging of measured variables.
+/// @param  None
+/// @return True if no faults, False if fault detected on MAX31856
 bool TempMeasure::update(void)
 {
-    if (has_fault()) {
-        return false;
-    }
+    // Check faults
+    uint8_t fault_code = 0;
+    bool has_fault = check_faults(fault_code);
 
     // Update readings
     // board temp (cold junction)
@@ -58,20 +63,22 @@ bool TempMeasure::update(void)
 
     last_update_ms = millis();
 
+    _logger->log_measurement(last_update_ms, board_temp, therm_temp, fault_code);
+
     if (DEBUG) {
         Serial.print(board_temp);
         Serial.print(",");
         Serial.println(therm_temp);
     }
 
-    return true;
+    return !has_fault;
 
 }
 
-bool TempMeasure::has_fault(void)
+bool TempMeasure::check_faults(uint8_t &fault)
 {
     // Check and print any faults
-    uint8_t fault = _thermocouple.readFault();
+    fault = _thermocouple.readFault();
     if (fault) {
         if (fault & MAX31856_FAULT_CJRANGE) Serial.println("Cold Junction Range Fault");
         if (fault & MAX31856_FAULT_TCRANGE) Serial.println("Thermocouple Range Fault");
