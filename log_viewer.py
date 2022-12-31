@@ -24,6 +24,7 @@ desired_temp = []
 measured_time_min = []
 board_temp = []
 measure_temp = []
+measure_faults = []
 
 with open(filename, 'r') as file:
     lines = csv.reader(file)
@@ -47,7 +48,7 @@ with open(filename, 'r') as file:
         measured_time_min.append(float(data[3])*MILLIS_2_MIN)
         board_temp.append(float(data[4]))
         measure_temp.append(float(data[5]))
-
+        measure_faults.append(float(data[6]))
 
         # count += 1
 
@@ -89,6 +90,15 @@ ax2.set_ylabel('delta time (s)')
 ax2.legend(loc='upper right')
 
 
+
+fig, ax3 = plt.subplots(figsize=(10, 5))
+
+ax3.plot(measured_time_min, measure_faults, label="Code", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
+
+ax3.set_xlabel('Time Elapsed (min)')
+ax3.set_ylabel('Fault Code (-)')
+
+ax3.legend(loc='upper right')
 
 
 
