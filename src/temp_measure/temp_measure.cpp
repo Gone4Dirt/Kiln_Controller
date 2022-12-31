@@ -1,6 +1,6 @@
 #include "temp_measure.h"
 
-#define DEBUG true         // Easy enable/disable debugger for prints to serial console
+#define DEBUG false         // Easy enable/disable debugger for prints to serial console
 
 // Constructor
 TempMeasure::TempMeasure(void){}
