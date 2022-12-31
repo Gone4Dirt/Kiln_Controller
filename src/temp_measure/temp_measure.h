@@ -16,6 +16,8 @@ class TempMeasure
 
         bool update(void);
 
+        float get_measured_temp() { return therm_temp; }
+
     private:
 
         Adafruit_MAX31856 _thermocouple = Adafruit_MAX31856(THERM_CS);
