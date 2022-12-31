@@ -35,8 +35,9 @@ void Logger::init(void)
               MTime(ms) = Measurement time, the last time that the measurement was updated,
               BT(degC)  = Board temperature, the last updated board temperature (cold junction),
               TT(degC)  = Thermocouple temperature, the last updated thermocouple temperature,
+              MFlt      = Measurement fault code
             */
-            _sd_file.println(F("LTime(ms),PTime(ms),PT(degC),MTime(ms),BT(degC),TT(degC)"));
+            _sd_file.println(F("LTime(ms),PTime(ms),PT(degC),MTime(ms),BT(degC),TT(degC),MFlt"));
             _sd_file.flush();
             file_created = true;
         }
@@ -89,6 +90,12 @@ void Logger::write(void)
     // TT(degC)
     memset(buffer, '\0', sizeof(buffer)); // Clear buffer
     dtostrf(_thermocouple_temp, 8, 3, buffer);
+    _sd_file.print(buffer);
+    _sd_file.print(",");
+
+    // MFlt
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%i,", _fault);
     _sd_file.print(buffer);
 
     // End of line
