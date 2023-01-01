@@ -4,7 +4,7 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define ADDRESS 0x3C // I2C Address of screen
-#define ERROR_DISPLAY_TIME 5000 // time that the error screen must stay on screen
+#define ERROR_DISPLAY_TIME 10000 // time that the error screen must stay on screen
 
 
 

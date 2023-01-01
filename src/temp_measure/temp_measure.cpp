@@ -9,7 +9,7 @@ TempMeasure::TempMeasure(void){}
 void TempMeasure::init(Logger *ptr)
 {
     if (DEBUG) {
-        Serial.println(F("Thermocouple constructor"));
+        Serial.println(F("Thermocouple init"));
     }
 
     // Store the pointer to the logger object

@@ -17,6 +17,10 @@ class Logger
 
         void log_measurement(unsigned long time_ms, float bt, float tt, uint8_t flt);
 
+        void log_controller(unsigned long time_ms, float p, float i, float d, bool limit_flag);
+
+        void log_output(float out, uint16_t win);
+
     private:
         // Track the status of the sd card state
         enum Status {
@@ -39,6 +43,17 @@ class Logger
         float _board_temp;
         float _thermocouple_temp;
         uint8_t _fault;
+
+        // Controller
+        unsigned long _ctrl_time_ms;
+        float _p;
+        float _i;
+        float _d;
+        bool _limit_flag;
+
+        // Output to SSR
+        float _output;
+        uint16_t _win;
 
         // Functions
         void raise_logger_error(Status err);

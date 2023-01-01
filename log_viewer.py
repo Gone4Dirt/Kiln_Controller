@@ -25,6 +25,13 @@ measured_time_min = []
 board_temp = []
 measure_temp = []
 measure_faults = []
+controller_time_min = []
+p_term = []
+i_term = []
+d_term = []
+ctrl_limit_flag = []
+output = []
+window = []
 
 with open(filename, 'r') as file:
     lines = csv.reader(file)
@@ -50,6 +57,15 @@ with open(filename, 'r') as file:
         measure_temp.append(float(data[5]))
         measure_faults.append(float(data[6]))
 
+        controller_time_min.append(float(data[7])*MILLIS_2_MIN)
+        p_term.append(float(data[8]))
+        i_term.append(float(data[9]))
+        d_term.append(float(data[10]))
+        ctrl_limit_flag.append(float(data[11]))
+
+        output.append(float(data[12]))
+        window.append(float(data[13]))
+
         # count += 1
 
         # if count >= 50:
@@ -58,7 +74,7 @@ with open(filename, 'r') as file:
 
 
 
-# Plot the data
+# Plot the temperature data
 fig, ax1 = plt.subplots(figsize=(10, 5))
 
 ax1.plot(therm_profile_time_min, desired_temp, label="Desired", linestyle='-', marker='', linewidth=1.5, color=[0,0,1])
@@ -90,16 +106,49 @@ ax2.set_ylabel('delta time (s)')
 ax2.legend(loc='upper right')
 
 
-
+# Plot fault codes
 fig, ax3 = plt.subplots(figsize=(10, 5))
-
-ax3.plot(measured_time_min, measure_faults, label="Code", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
-
+ax3.plot(measured_time_min, measure_faults, label="Measurement", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
 ax3.set_xlabel('Time Elapsed (min)')
 ax3.set_ylabel('Fault Code (-)')
-
 ax3.legend(loc='upper right')
 
+
+# Plot PID controller
+fig, ax4 = plt.subplots(figsize=(10, 5))
+ax4.plot(controller_time_min, p_term, label="P", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
+ax4.plot(controller_time_min, i_term, label="I", linestyle='-', marker='', linewidth=1.5, color=[0,0,1])
+ax4.plot(controller_time_min, d_term, label="D", linestyle='-', marker='', linewidth=1.5, color=[1,0,0])
+ax4.plot(controller_time_min, output, label="Out", linestyle='-', marker='', linewidth=1.5, color=[0,1,0])
+ax4.set_xlabel('Time Elapsed (min)')
+ax4.set_ylabel('Controller Contributions (-)')
+ax4.legend(loc='upper right')
+
+# Controller limit flags
+fig, ax5 = plt.subplots(figsize=(10, 5))
+ax5.plot(controller_time_min, ctrl_limit_flag, label="PID Limit", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
+ax5.set_xlabel('Time Elapsed (min)')
+ax5.set_ylabel('Limit Flags (-)')
+ax5.legend(loc='upper right')
+
+# Controller Error
+error = []
+for meas, targ in zip(measure_temp, desired_temp):
+    # replicate the normalised error calc in the controller
+    error.append((targ - meas)/max(targ, 1))
+
+fig, ax5 = plt.subplots(figsize=(10, 5))
+ax5.plot(controller_time_min, error, label="Error", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
+ax5.set_xlabel('Time Elapsed (min)')
+ax5.set_ylabel('Error (-)')
+ax5.legend(loc='upper right')
+
+# Window size
+fig, ax7 = plt.subplots(figsize=(10, 5))
+ax7.plot(controller_time_min, window, label="SSR Win", linestyle='-', marker='', linewidth=1.5, color=[0,0,0])
+ax7.set_xlabel('Time Elapsed (min)')
+ax7.set_ylabel('Time (ms)')
+ax7.legend(loc='upper right')
 
 
 plt.show()

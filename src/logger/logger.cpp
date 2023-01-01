@@ -36,8 +36,15 @@ void Logger::init(void)
               BT(degC)  = Board temperature, the last updated board temperature (cold junction),
               TT(degC)  = Thermocouple temperature, the last updated thermocouple temperature,
               MFlt      = Measurement fault code
+              CTime(ms) = Controller time, last time that controller was updated
+              P         = P-term contribution to output
+              I         = I-term contribution to output
+              D         = D-term contribution to output
+              Lim       = Controller limit flag
+              Out       = Output from controller
+              Win       = Window length
             */
-            _sd_file.println(F("LTime(ms),PTime(ms),PT(degC),MTime(ms),BT(degC),TT(degC),MFlt"));
+            _sd_file.println(F("LTime(ms),PTime(ms),PT(degC),MTime(ms),BT(degC),TT(degC),MFlt,CTime(ms),P,I,D,Lim,Out,Win"));
             _sd_file.flush();
             file_created = true;
         }
@@ -98,6 +105,45 @@ void Logger::write(void)
     sprintf(buffer, "%i,", _fault);
     _sd_file.print(buffer);
 
+    // CTime(ms)
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%lu,", _ctrl_time_ms);
+    _sd_file.print(buffer);
+
+    // P
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    dtostrf(_p, 8, 3, buffer);
+    _sd_file.print(buffer);
+    _sd_file.print(",");
+
+    // I
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    dtostrf(_i, 8, 1, buffer);
+    _sd_file.print(buffer);
+    _sd_file.print(",");
+
+    // D
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    dtostrf(_d, 10, 5, buffer);
+    _sd_file.print(buffer);
+    _sd_file.print(",");
+
+    // Lim
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%i,", _limit_flag);
+    _sd_file.print(buffer);
+
+    // Out
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    dtostrf(_output, 8, 3, buffer);
+    _sd_file.print(buffer);
+    _sd_file.print(",");
+
+    // Win
+    memset(buffer, '\0', sizeof(buffer)); // Clear buffer
+    sprintf(buffer, "%i", _win);
+    _sd_file.print(buffer);
+
     // End of line
     _sd_file.print(F("\n"));
 
@@ -107,7 +153,7 @@ void Logger::write(void)
 
 }
 
-
+// TODO: set these error messages on the screen
 void Logger::raise_logger_error(Status err)
 {
   unsigned long now = millis();
@@ -150,4 +196,21 @@ void Logger::log_therm_profile(unsigned long time_ms, int16_t dest)
 {
     _therm_prof_time_ms = time_ms;
     _desired_temp = dest;
+}
+
+
+void Logger::log_controller(unsigned long time_ms, float p, float i, float d, bool limit_flag)
+{
+    _ctrl_time_ms = time_ms;
+    _p = p;
+    _i = i;
+    _d = d;
+    _limit_flag = limit_flag;
+}
+
+
+void Logger::log_output(float out, uint16_t win)
+{
+    _output = out;
+    _win = win;
 }
