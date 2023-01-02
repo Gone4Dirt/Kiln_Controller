@@ -1,7 +1,7 @@
 #include "logger.h"
 
 
-#define SD_CS 53                       // Chip select pin for sd card
+#define SD_CS 46                       // Chip select pin for sd card
 #define FILE_LIMIT (uint16_t)1000      // Max number of files on sd
 #define LOGGING_DT 500
 

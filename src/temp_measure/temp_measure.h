@@ -5,7 +5,7 @@
 #include <Adafruit_MAX31856.h>
 #include "../logger/logger.h"
 
-#define THERM_CS 46        // Chip select pin for MAX 31856
+#define THERM_CS 53        // Chip select pin for MAX 31856
 
 class TempMeasure
 {

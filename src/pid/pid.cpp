@@ -71,11 +71,7 @@ float PID::calc(float input, float setpoint)
 
     // Calculate time step size. We do not wan to assume this
     float dt = static_cast<float>(now_ms - _last_ms)*MS_2_SEC; // (s)
-
-    // Serial.print(dt);
-    // Serial.print(",");
-    // Serial.print(error);
-    // Serial.print(",");
+    dt = max(dt, 1e-4f); // Guard against dev by zero
 
     // Calculate the integrator contribution only if the controller has not been limited
     if (!_limit_flag) {

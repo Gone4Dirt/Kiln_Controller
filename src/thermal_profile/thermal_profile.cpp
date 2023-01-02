@@ -1,6 +1,6 @@
 #include "thermal_profile.h"
 
-#define SD_CS 53         // Chip select pin for sd card
+#define SD_CS 46         // Chip select pin for sd card
 #define DEBUG false
 #define MIN_2_MILLIS 60000
 #define MILLIS_2_MIN 0.00001666666666667

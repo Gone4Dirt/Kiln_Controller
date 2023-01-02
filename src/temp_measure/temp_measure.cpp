@@ -21,6 +21,9 @@ void TempMeasure::init(Logger *ptr)
     // Type K thermocouple
     _thermocouple.setThermocoupleType(MAX31856_TCTYPE_K);
 
+    // Set the noise filter as using 50 Hz Mains
+    _thermocouple.setNoiseFilter(MAX31856_NOISE_FILTER_50HZ);
+
     if (DEBUG) {
         Serial.print(F("Thermocouple type: "));
         switch (_thermocouple.getThermocoupleType() ) {

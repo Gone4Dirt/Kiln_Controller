@@ -25,11 +25,11 @@ PID _pid;
 unsigned long _last_ctrl_update_ms;
 #define KP 1.5
 #define KI 0.1
-#define KD 0.01
+#define KD 0.1
 #define IMAX 1.0
 
-#define SSR_PIN 42
-#define INDICATOR_LED_PIN 44
+#define SSR_PIN 44
+#define INDICATOR_LED_PIN 7
 #define MIN_SWITCH_TIME 100 //(ms)
 uint16_t _window_ms;
 float _output;
@@ -113,7 +113,8 @@ void loop()
     }
 
     // Set the SSR control pin
-    if (!_error_state &&  (millis() - _last_ctrl_update_ms <= _window_ms)) {
+    if (!_error_state && ((millis() - _last_ctrl_update_ms) < _window_ms)) {
+
         // Switch heating element on
         digitalWrite(SSR_PIN, HIGH);
         digitalWrite(INDICATOR_LED_PIN, HIGH);
