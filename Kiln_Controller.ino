@@ -89,6 +89,8 @@ void loop()
 
           // TODO: shut down kiln, we have a faulty temperature measurement
             Serial.println(F("ERROR caught"));
+        } else {
+          _error_state = false;
         }
 
         _measured_temp = _mea_temp.get_measured_temp();
