@@ -4,9 +4,9 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define ADDRESS 0x3C // I2C Address of screen
-#define ERROR_DISPLAY_TIME 10000 // time that the error screen must stay on screen
+#define ERROR_DISPLAY_TIME 5000 // time that the error screen must stay on screen
 
-
+#include <Adafruit_MAX31856.h>
 
 
 
@@ -51,10 +51,8 @@ void Screen::update(int16_t target, int16_t measured)
 
     _display->clearDisplay();
 
-    // _display->setTextSize(2);
-    // _display->setTextColor(WHITE);
-
-        // Print the target temp
+    // Print the target temp
+    _display->setTextSize(2);
     _display->setCursor(0, 5);
     _display->print("T: ");
 
@@ -101,4 +99,71 @@ void Screen::error(void)
     _error_set_ms = millis();
 }
 
+// TODO: improve this so we get the string from the temp measurement library
+void Screen::measurement_error(uint8_t fault_code)
+{
+    _display->clearDisplay();
+    _display->setTextSize(1);
+
+    if (fault_code & MAX31856_FAULT_CJRANGE) {
+        _display->setCursor(0, 5);
+        _display->print("Cold Junc");
+        _display->setCursor(0, 32);
+        _display->print("Range Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_TCRANGE) {
+        _display->setCursor(0, 5);
+        _display->print("Thermocouple");
+        _display->setCursor(0, 32);
+        _display->print("Range Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_CJHIGH) {
+        _display->setCursor(0, 5);
+        _display->print("Cold Junc");
+        _display->setCursor(0, 32);
+        _display->print("High Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_CJLOW) {
+        _display->setCursor(0, 5);
+        _display->print("Cold Junc");
+        _display->setCursor(0, 32);
+        _display->print("Low Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_TCHIGH) {
+        _display->setCursor(0, 5);
+        _display->print("Thermocouple");
+        _display->setCursor(0, 32);
+        _display->print("High Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_TCLOW) {
+        _display->setCursor(0, 5);
+        _display->print("Thermocouple");
+        _display->setCursor(0, 32);
+        _display->print("Low Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_OVUV) {
+        _display->setCursor(0, 5);
+        _display->print("Over/Under");
+        _display->setCursor(0, 32);
+        _display->print("Volt Fault");
+    }
+
+    if (fault_code & MAX31856_FAULT_OPEN) {
+        _display->setCursor(0, 5);
+        _display->print("Thermocouple");
+        _display->setCursor(0, 32);
+        _display->print("Open Fault");
+    }
+
+    _display->display(); 
+
+    // Prevent the display being overridden by setting the timer
+    _error_set_ms = millis();
+}
 

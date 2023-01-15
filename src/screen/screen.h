@@ -19,6 +19,8 @@ class Screen
 
         void error(void);
 
+        void measurement_error(uint8_t fault_code);
+
     private:
 
         Adafruit_SSD1306* _display;
