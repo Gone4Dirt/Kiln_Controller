@@ -16,7 +16,9 @@ class TempMeasure
 
         bool update(void);
 
-        float get_measured_temp() { return therm_temp; }
+        float const get_measured_temp() { return therm_temp; }
+
+        uint8_t const get_fault_code(void) { return _fault_code; }
 
     private:
 
@@ -26,6 +28,7 @@ class TempMeasure
 
         float therm_temp;
         float board_temp;
+        uint8_t _fault_code;
 
         unsigned long last_update_ms;
 

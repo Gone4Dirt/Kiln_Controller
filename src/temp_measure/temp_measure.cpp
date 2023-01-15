@@ -54,8 +54,8 @@ void TempMeasure::init(Logger *ptr)
 bool TempMeasure::update(void)
 {
     // Check faults
-    uint8_t fault_code = 0;
-    bool has_fault = check_faults(fault_code);
+    _fault_code = 0;
+    bool has_fault = check_faults(_fault_code);
 
     // Update readings
     // board temp (cold junction)
@@ -66,7 +66,7 @@ bool TempMeasure::update(void)
 
     last_update_ms = millis();
 
-    _logger->log_measurement(last_update_ms, board_temp, therm_temp, fault_code);
+    _logger->log_measurement(last_update_ms, board_temp, therm_temp, _fault_code);
 
     if (DEBUG) {
         Serial.print(board_temp);
