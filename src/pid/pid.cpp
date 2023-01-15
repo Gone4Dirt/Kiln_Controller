@@ -108,6 +108,13 @@ float PID::calc(float input, float setpoint)
     return output;
 }
 
+void PID::reset(float input, float setpoint)
+{
+    // use normalised error to keep controller in the -1 to 1 range
+    float error = (setpoint - input) / max(setpoint, 1.0);
+
+    reset(error);
+}
 
 void PID::reset(float error)
 {

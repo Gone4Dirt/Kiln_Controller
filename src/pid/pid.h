@@ -15,6 +15,7 @@ class PID
 
         float calc(float input, float setpoint);
 
+        void reset(float input, float setpoint);
         void reset(float error);
 
         void set_pid(float kp, float ki, float kd);
